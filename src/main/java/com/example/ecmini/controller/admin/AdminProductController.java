@@ -61,6 +61,7 @@ public class AdminProductController {
             @RequestParam(required = false) Integer price,
             @RequestParam(required = false) Integer stock,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String description,
             @RequestParam(value = "image", required = false) MultipartFile imageFile
     ) {
         Product product = new Product();
@@ -68,6 +69,7 @@ public class AdminProductController {
         product.setPrice(price);
         product.setStock(stock);
         product.setCategory(category);
+        product.setDescription(description);
 
         productService.create(product, imageFile);
 
@@ -93,6 +95,7 @@ public class AdminProductController {
             @RequestParam(required = false) Integer price,
             @RequestParam(required = false) Integer stock,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String description,
             @RequestParam(value = "image", required = false) MultipartFile imageFile
     ) {
         Product product = new Product();
@@ -100,6 +103,7 @@ public class AdminProductController {
         product.setPrice(price);
         product.setStock(stock);
         product.setCategory(category);
+        product.setDescription(description);
 
         productService.update(id, product, imageFile);
 
@@ -132,5 +136,5 @@ public class AdminProductController {
         model.addAttribute("product", product);
         return "admin/products/detail";
     }
-    
+
 }

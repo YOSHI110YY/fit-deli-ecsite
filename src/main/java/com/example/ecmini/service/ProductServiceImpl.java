@@ -90,6 +90,7 @@ public class ProductServiceImpl implements ProductService {
         existing.setPrice(product.getPrice());
         existing.setStock(product.getStock());
         existing.setCategory(product.getCategory());
+        existing.setDescription(product.getDescription());
 
         // 新しい画像があれば上書き
         if (imageFile != null && !imageFile.isEmpty()) {

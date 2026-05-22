@@ -49,7 +49,8 @@
         .product-image {
             height: 220px;
             object-fit: contain;
-            background: #f3f4f6;
+            background: #eef1f4;
+            padding: 12px;
         }
 
         .card-body {
@@ -234,7 +235,8 @@
                             在庫なし
                         </p>
 
-                <form th:action="@{'/cart/add/' + ${product.id}}"
+                <form th:if="${product.stock > 0}"
+                      th:action="@{'/cart/add/' + ${product.id}}"
                       method="post">
 
                     <button type="submit"
@@ -244,9 +246,11 @@
 
                 </form>
 
-                        <div th:if="${product.stock == 0}">
-                            <button class="btn btn-secondary btn-sm w-100" disabled>在庫なし</button>
-                        </div>
+                <div th:if="${product.stock == 0}">
+                    <button class="btn btn-secondary btn-sm w-100" disabled>
+                        在庫なし
+                    </button>
+                </div>
 
                     </div>
                 </div>

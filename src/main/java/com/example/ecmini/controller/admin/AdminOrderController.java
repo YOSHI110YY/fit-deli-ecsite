@@ -1,5 +1,6 @@
 package com.example.ecmini.controller.admin;
 
+import com.example.ecmini.entity.Order;
 import com.example.ecmini.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -48,4 +49,5 @@ public class AdminOrderController {
 
         return "redirect:/admin/orders";
     }
+
 }
