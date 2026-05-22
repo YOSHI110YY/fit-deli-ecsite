@@ -83,6 +83,28 @@ mvn spring-boot:run
 
 ---
 
+## Screenshots
+
+### Login
+![Login](screenshots/login-page.png)
+
+### Product List
+![Product List](screenshots/product-list.png)
+
+### Cart
+![Cart](screenshots/cart-page.png)
+
+### Order Complete
+![Order Complete](screenshots/order-complete.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### Admin Orders
+![Admin Orders](screenshots/admin-order-list.png)
+
+
+
 ## 今後改善したい点
 
 - 決済機能の追加
