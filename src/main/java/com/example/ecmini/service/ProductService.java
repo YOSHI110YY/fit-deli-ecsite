@@ -1,6 +1,7 @@
 package com.example.ecmini.service;
 
 import com.example.ecmini.entity.Product;
+import com.example.ecmini.form.ProductForm;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,9 +23,9 @@ public interface ProductService {
 
     Page<Product> getPage(int page);
 
-    void create(Product product, MultipartFile imageFile);
+    void create(ProductForm form, MultipartFile imageFile);
 
-    void update(Long id, Product product, MultipartFile imageFile);
+    void update(Long id, ProductForm form, MultipartFile imageFile);
 
     String getImagePath(Product product);
 

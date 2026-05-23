@@ -1,7 +1,9 @@
 package com.example.ecmini.service;
 
 import com.example.ecmini.entity.Product;
+import com.example.ecmini.exception.ProductNotFoundException;
 import com.example.ecmini.repository.ProductRepository;
+import com.example.ecmini.form.ProductForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
     @Override
     public List<Product> findAll() {
@@ -68,38 +70,49 @@ public class ProductServiceImpl implements ProductService {
 
     // 商品登録
     @Override
-    public void create(Product product, MultipartFile imageFile) {
+    public void create(ProductForm form, MultipartFile imageFile) {
 
-        // 画像保存
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-            saveImage(imageFile, fileName);
-            product.setImage(fileName);
-        }
+        Product product = new Product();
+
+        applyImage(product, imageFile);
 
         productRepository.save(product);
     }
 
     // 商品更新
     @Override
-    public void update(Long id, Product product, MultipartFile imageFile) {
+    public void update(Long id, ProductForm form, MultipartFile imageFile) {
 
         Product existing = findById(id);
 
-        existing.setName(product.getName());
-        existing.setPrice(product.getPrice());
-        existing.setStock(product.getStock());
-        existing.setCategory(product.getCategory());
-        existing.setDescription(product.getDescription());
+        applyForm(existing, form);
 
-        // 新しい画像があれば上書き
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-            saveImage(imageFile, fileName);
-            existing.setImage(fileName);
-        }
+        applyImage(existing, imageFile);
 
         productRepository.save(existing);
+    }
+
+    private void applyForm(Product product, ProductForm form) {
+
+        product.setName(form.getName());
+        product.setPrice(form.getPrice());
+        product.setStock(form.getStock());
+        product.setCategory(form.getCategory());
+        product.setDescription(form.getDescription());
+
+    }
+
+    private void applyImage(Product product, MultipartFile imageFile) {
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+
+            String fileName =
+                    System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+
+            saveImage(imageFile, fileName);
+
+            product.setImage(fileName);
+        }
     }
 
     // 画像保存処理（共通化）

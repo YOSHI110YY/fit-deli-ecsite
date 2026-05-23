@@ -3,8 +3,11 @@ package com.example.ecmini.controller.admin;
 import com.example.ecmini.service.CategoryService;
 import com.example.ecmini.entity.Product;
 import com.example.ecmini.service.ProductService;
+import com.example.ecmini.form.ProductForm;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +29,7 @@ public class AdminProductController {
 
     // 商品一覧（ページング対応）
     @GetMapping
+
     public String list(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String category,
@@ -47,8 +51,7 @@ public class AdminProductController {
     // 商品登録フォーム
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("product", new Product());
-
+        model.addAttribute("productForm", new ProductForm());
         model.addAttribute("categories", categoryService.findAll());
 
         return "admin/products/new";
@@ -57,21 +60,18 @@ public class AdminProductController {
     // 商品登録処理
     @PostMapping("/new")
     public String createProduct(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer price,
-            @RequestParam(required = false) Integer stock,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String description,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile
+            @Valid @ModelAttribute ProductForm form,
+            BindingResult bindingResult,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            Model model
     ) {
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setStock(stock);
-        product.setCategory(category);
-        product.setDescription(description);
 
-        productService.create(product, imageFile);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.findAll());
+            return "admin/products/new";
+        }
+
+        productService.create(form, imageFile);
 
         return "redirect:/admin/products";
     }
@@ -79,9 +79,18 @@ public class AdminProductController {
     // 商品編集フォーム
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Product product = productService.findById(id);
-        model.addAttribute("product", product);
 
+        Product product = productService.findById(id);
+
+        ProductForm form = new ProductForm();
+        form.setName(product.getName());
+        form.setPrice(product.getPrice());
+        form.setStock(product.getStock());
+        form.setCategory(product.getCategory());
+        form.setDescription(product.getDescription());
+
+        model.addAttribute("product", product);
+        model.addAttribute("productForm", form);
         model.addAttribute("categories", categoryService.findAll());
 
         return "admin/products/edit";
@@ -91,25 +100,24 @@ public class AdminProductController {
     @PostMapping("/edit/{id}")
     public String updateProduct(
             @PathVariable Long id,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer price,
-            @RequestParam(required = false) Integer stock,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String description,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile
+            @Valid @ModelAttribute ProductForm form,
+            BindingResult bindingResult,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            Model model
     ) {
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setStock(stock);
-        product.setCategory(category);
-        product.setDescription(description);
 
-        productService.update(id, product, imageFile);
+        if (bindingResult.hasErrors()) {
+
+            model.addAttribute("product", productService.findById(id));
+            model.addAttribute("categories", categoryService.findAll());
+
+            return "admin/products/edit";
+        }
+
+        productService.update(id, form, imageFile);
 
         return "redirect:/admin/products";
     }
-
 
     // 商品削除
     @GetMapping("/delete/{id}")
